@@ -15,6 +15,7 @@ print(s[0:3:1])
 # y stands for the end of the sequence, excluding y itself
 # and z is the "step" parameter, which gets every z-ond element in the given sequence
 print(ls[0:7:2])
+# USEFUL HACK: you can go in the reversed order if you put a negative value in the step parameter
 
 # we can also :
 # - use the len() method on each object
