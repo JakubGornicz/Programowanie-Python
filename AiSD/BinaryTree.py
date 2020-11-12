@@ -1,31 +1,27 @@
 from typing import Any
 
 
-class BinaryNode:
+class BinaryNode(object):
     value: Any
 
-    def __init__(self, value):
+    def __init__(self, value: Any):
         self.value = value
-        self.left_child = None
-        self.right_child = None
-        self.children = []
+        self.left = None
+        self.right = None
         self.parent = None
+        self.children = []
 
     def __repr__(self):
         return str(self.value)
 
-    def add_right_child(self, new_child):
-        new_child.parent = self
-        self.right_child = new_child
-        self.children.append(new_child)
-
-    def add_left_child(self, new_child):
-        new_child.parent = self
-        self.left_child = new_child
-        self.children.append(new_child)
+    def is_leaf(self):
+        if self.left is None and self.right is None:
+            return True
+        else:
+            return False
 
     @property
-    def get_level(self):
+    def get_level(self) -> int:
         level = 0
         temp = self.parent
         while temp is not None:
@@ -34,68 +30,120 @@ class BinaryNode:
 
         return level
 
-    def is_leaf(self):
-        if len(self.children) == 0:
-            return True
-        else:
-            return False
+    def add_left_child(self, value: Any):
+        new_node = BinaryNode(value)
+        new_node.parent = self
+        self.left = new_node
+        self.children.append(new_node)
 
-    def print_tree(self):
-        indentation = ' ' * self.get_level * 3
+    def add_right_child(self, value: Any):
+        new_node = BinaryNode(value)
+        new_node.parent = self
+        self.right = new_node
+        self.children.append(new_node)
+
+    def traverse_in_order(self, start, path=''):
+        if start:
+            path = self.traverse_in_order(start.left, path)
+            path += str(start.value)
+            path = self.traverse_in_order(start.right, path)
+        return path
+
+    def traverse_post_order(self, start, path=''):
+        if start:
+            path = self.traverse_in_order(start.left, path)
+            path = self.traverse_in_order(start.right, path)
+            path += str(start.value)
+        return path
+
+    def traverse_pre_order(self, start, path: str):
+        if start:
+            path += str(start.value)
+            path = self.traverse_pre_order(start.left, path)
+            path = self.traverse_pre_order(start.right, path)
+        return path
+
+    def show(self):
+        indentation = ' ' * self.get_level * 4
         if self.parent:
-            prefix = indentation + "|__"
+            prefix = indentation + "|___"
         else:
-            prefix = ""
+            prefix = "    "
         print(prefix + str(self.value))
         if self.children:
             for child in self.children:
                 if child:
-                    child.print_tree()
+                    child.show()
 
 
-"""
-class BinaryTree(BinaryNode):
-    root: BinaryNode
-    def __init__(self, value):
-        self.root = value
+class BinaryTree(object):
+    def __init__(self, root):
+        self.root = BinaryNode(root)
 
-    def print_tree(self):
-        indentation = ' ' * self.get_level() * 3
-        if self.parent:
-            prefix = indentation + "|__"
+    def traverse_in_order(self, start, path=''):
+        if start:
+            path = self.traverse_in_order(start.left, path)
+            path += str(start.value)
+            path = self.traverse_in_order(start.right, path)
+        return path
+
+    def traverse_post_order(self, start, path=''):
+        if start:
+            path = self.traverse_in_order(start.left, path)
+            path = self.traverse_in_order(start.right, path)
+            path += str(start.value)
+        return path
+
+    def traverse_pre_order(self, start, path=''):
+        if start:
+            path += str(start.value)
+            path = self.traverse_pre_order(start.left, path)
+            path = self.traverse_pre_order(start.right, path)
+        return path
+
+    @property
+    def get_level(self) -> int:
+        level = 0
+        temp = self.root.parent
+        while temp is not None:
+            level += 1
+            temp = temp.parent
+
+        return level
+
+    def show(self):
+        indentation = ' ' * self.get_level * 4
+        if self.root.parent:
+            prefix = indentation + "|___"
         else:
-            prefix = ""
-        print(prefix + str(self.value))
-        if self.children:
-            for child in self.children:
+            prefix = "    "
+        print(prefix + str(self.root.value))
+        if self.root.children:
+            for child in self.root.children:
                 if child:
-                    child.print_tree()        
-"""
-root = BinaryNode("human")
-print("printing object of type 'BinaryNode':", root, '\n')
+                    child.show()
 
-female = BinaryNode("female")
 
-woman = BinaryNode("woman")
-girl = BinaryNode("girl")
-female.add_right_child(woman)
-female.add_left_child(girl)
+tree = BinaryTree(1)
+tree.root.add_left_child(2)
+tree.root.add_right_child(3)
+tree.root.left.add_left_child(4)
+tree.root.left.add_right_child(5)
+tree.root.right.add_left_child(6)
+tree.root.right.add_right_child(7)
+#                  1
+#               /     \
+#              2       3
+#             / \     / \
+#            4   5   6   7
 
-male = BinaryNode("male")
 
-man = BinaryNode("man")
-boy = BinaryNode("boy")
-male.add_right_child(man)
-male.add_left_child(boy)
+print(tree.root)
+print(tree.root.is_leaf())
+print(tree.root.left.is_leaf())
+print(tree.root.left.left.is_leaf())
 
-strong = BinaryNode("strong")
-man.add_right_child(strong)
-
-root.add_right_child(female)
-root.add_left_child(male)
-
-print("graphic representation of the binary tree: ")
-root.print_tree()
-print('\nis human a leaf?:', root.is_leaf())
-print('is girl a leaf?:', girl.is_leaf())
-print('is strong a leaf?:', strong.is_leaf())
+print(tree.traverse_pre_order(tree.root))
+print(tree.traverse_in_order(tree.root))
+print(tree.traverse_post_order(tree.root))
+tree.show()
