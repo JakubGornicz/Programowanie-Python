@@ -223,6 +223,7 @@ print(1*2*3*4*5)
 # lambda functions are especially useful when we need to use a particular function only once
 # BUILT IN FUNCTION "map"
 l2 = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+
 print(list(map(lambda x: x**2, l2)))
 print(list(filter(lambda y: y % 2 == 0, l2)))
 
