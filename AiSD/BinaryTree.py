@@ -77,6 +77,8 @@ class BinaryNode(object):
 
 
 class BinaryTree(object):
+    root: BinaryNode
+
     def __init__(self, root):
         self.root = BinaryNode(root)
 
@@ -131,6 +133,8 @@ tree.root.left.add_left_child(4)
 tree.root.left.add_right_child(5)
 tree.root.right.add_left_child(6)
 tree.root.right.add_right_child(7)
+tree.root.left.right.add_left_child(13)
+tree.root.left.right.add_right_child(12)
 #                  1
 #               /     \
 #              2       3
@@ -147,3 +151,10 @@ print(tree.traverse_pre_order(tree.root))
 print(tree.traverse_in_order(tree.root))
 print(tree.traverse_post_order(tree.root))
 tree.show()
+
+print("\n")
+node = BinaryNode('Parent')
+node.add_left_child('Child1')
+node.add_right_child('Child2')
+node.left.add_left_child('Grandchild1')
+node.show()
