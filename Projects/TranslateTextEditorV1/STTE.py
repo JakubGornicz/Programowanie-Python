@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import scrolledtext, ttk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
-from googletrans import Translator
+from translate import Translator
 
 
 def open_file():
@@ -42,27 +42,26 @@ def save_file():
 
 
 def trans():
-    translator = Translator()
-    for x in txt_edit.get('1.0', 'end-1c').splitlines():
-        lines.append(x)
-        f = str(from_lang.get())
-        t = str(to_lang.get())
-        result = translator.translate(text=x, src=f, dest=t)
-        s = str(str(result.text) + ' - ' + str(x)+'\n')
-        tablica_Ready.append(s)
-    txt_edit.delete("1.0", tk.END)
-    print(tablica_Ready)
-    for x in tablica_Ready:
-        txt_edit.insert(2.0, str(x))
+    f = from_lang.get()
+    t = to_lang.get()
+    translator = Translator(from_lang=f, to_lang=t)
+    i = 1
+    for word in txt_edit.get("1.0", tk.END).splitlines():
+        result = translator.translate(word)
+        if len(word) > 0:
+            txt_edit.insert(f"{i}.{str(len(word))}", f" - {result}")
+        i += 1
+    translation_mode.destroy()
 
 
 window = tk.Tk()
 
-lines = []
+translated = []
 tablica_Ready = []
 window.title("SimplyEdit")
 
-window.rowconfigure(0, minsize=800, weight=1)
+window.rowconfigure(0, minsize=780, weight=1)
+window.rowconfigure(1, minsize=20, weight=1)
 window.columnconfigure(1, minsize=800, weight=1)
 
 txt_edit = scrolledtext.ScrolledText(master=window, font=("Helvetica", 14))
@@ -71,7 +70,7 @@ fr_buttons = tk.Frame(master=window, relief=tk.SUNKEN, borderwidth=2)
 btn_open = tk.Button(master=fr_buttons, text="Open", command=open_file)
 btn_save_as = tk.Button(master=fr_buttons, text="Save As...", command=save_file_as)
 btn_save = tk.Button(master=fr_buttons, text="Save", command=save_file)
-btn_trans = tk.Button(master=fr_buttons, text="Translate")
+btn_trans = tk.Button(master=fr_buttons, text="Translate", command=trans)
 
 btn_open.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
 btn_save.grid(row=1, column=0, sticky="ew", padx=5)
@@ -81,28 +80,23 @@ btn_trans.grid(row=3, column=0, sticky="ew", padx=5, pady=10)
 fr_buttons.grid(row=0, column=0, sticky="ns")
 txt_edit.grid(row=0, column=1, sticky="nsew")
 
-translation_mode = tk.Tk()
-translation_mode.geometry('375x75')
-translation_mode.title("Chose translation mode")
+translation_mode = tk.Frame(master=window)
 
+lbl_description = tk.Label(master=translation_mode, text="Chose translation mode: ", font=("Helvetica", 13))
 lbl_select = ttk.Label(master=translation_mode, text="Select:", font=("Helvetica", 11))
 
-n = tk.StringVar()
-m = tk.StringVar()
-
-from_lang = ttk.Combobox(master=translation_mode, width=13, textvariable=n, state='readonly')
+from_lang = ttk.Combobox(master=translation_mode, width=13)
 from_lang['values'] = ['en', 'pl', 'no']
-from_lang.current(1)
-to_lang = ttk.Combobox(master=translation_mode, width=13, textvariable=m, state='readonly')
+from_lang.current(0)
+
+to_lang = ttk.Combobox(master=translation_mode, width=13)
 to_lang['values'] = ['en', 'pl', 'no']
-to_lang.current(1)
-lbl_select.grid(column=0, row=5, padx=10, pady=25)
-btn_submit = ttk.Button(master=translation_mode, text="submit", command=trans)
-btn_submit.grid(column=3, row=5, padx=10, pady=25)
+to_lang.current()
 
+lbl_description.grid(column=0, row=5, padx=10, pady=3)
 from_lang.grid(column=1, row=5)
-to_lang.grid(column=2, row=5)
+to_lang.grid(column=2, row=5, padx=20)
 
-translation_mode.mainloop()
+translation_mode.grid(row=1, column=1, sticky="e")
 
 window.mainloop()
