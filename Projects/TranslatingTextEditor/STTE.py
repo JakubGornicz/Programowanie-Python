@@ -56,6 +56,9 @@ def trans():
 
 window = tk.Tk()
 window.title("STTE")
+window.event_add('<<Paste>>', '<Control-v>')
+window.event_add('<<Cut>>', '<Control-x>')
+window.event_add('<<Copy>>', '<Control-v>')
 
 window.rowconfigure(0, minsize=780, weight=1)
 window.rowconfigure(1, minsize=20, weight=1)
