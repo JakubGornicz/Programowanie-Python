@@ -43,8 +43,16 @@ def save_file():
 
 
 def trans():
+    """Translates the contents of text box after choosing proper setting and pressing "translate button" """
     f = from_lang.get()
     t = to_lang.get()
+
+    # checking if user has chosen proper translation settings
+    values = ['en', 'pl', 'no']
+    if f not in values or t not in values:
+        return
+
+    # translating and inserting translated words into the text box
     translator = Translator(from_lang=f, to_lang=t)
     i = 1
     for word in txt_edit.get("1.0", tk.END).splitlines():
@@ -53,20 +61,26 @@ def trans():
             txt_edit.insert(f"{i}.{str(len(word))}", f" - {result}")
         i += 1
 
+# CREATING GUI
+
 
 window = tk.Tk()
+# setting window parameters
 window.title("STTE")
 window.event_add('<<Paste>>', '<Control-v>')
 window.event_add('<<Cut>>', '<Control-x>')
 window.event_add('<<Copy>>', '<Control-v>')
 
+# configuring the layout of the window
 window.rowconfigure(0, minsize=780, weight=1)
 window.rowconfigure(1, minsize=20, weight=1)
 window.columnconfigure(1, minsize=800, weight=1)
 
-txt_edit = scrolledtext.ScrolledText(master=window, font=("Helvetica", 14))
-fr_buttons = tk.Frame(master=window, relief=tk.SUNKEN, borderwidth=2)
 
+txt_edit = scrolledtext.ScrolledText(master=window, font=("Helvetica", 14))
+
+# creating buttons
+fr_buttons = tk.Frame(master=window, relief=tk.SUNKEN, borderwidth=2)
 btn_open = tk.Button(master=fr_buttons, text="Open", command=open_file)
 btn_save_as = tk.Button(master=fr_buttons, text="Save As...", command=save_file_as)
 btn_save = tk.Button(master=fr_buttons, text="Save", command=save_file)
@@ -74,10 +88,11 @@ btn_save = tk.Button(master=fr_buttons, text="Save", command=save_file)
 btn_open.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
 btn_save.grid(row=1, column=0, sticky="ew", padx=5)
 btn_save_as.grid(row=2, column=0, sticky="ew", padx=5, pady=5)
-
 fr_buttons.grid(row=0, column=0, sticky="ns")
+
 txt_edit.grid(row=0, column=1, sticky="nsew")
 
+# translation segment
 translation_mode = tk.Frame(master=window)
 
 lbl_description = tk.Label(master=translation_mode, text="Chose translation:", font=("Helvetica", 13))
