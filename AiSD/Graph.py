@@ -15,6 +15,9 @@ class Vertex(object):
         self.data = data
         self.index = index
 
+    def __repr__(self):
+        return str(self.data)
+
 
 class Edge(object):
     source: Vertex
@@ -26,77 +29,65 @@ class Edge(object):
         self.destination = destination
         self.weight = weight
 
+    def __repr__(self):
+        return f"{self.destination.index} : {self.destination.data}"
+
 
 class Graph(object):
     graph_dict: Dict[Vertex, List[Edge]]
-    staticIndex = 0
+    weight: bool
 
-    def __init__(self, edges):
-        self.edges = edges
-        self.graph_dict = {}
-        for start, end in self.edges:
-            if start in self.graph_dict:
-                self.graph_dict[start].append(end)
-            else:
-                self.graph_dict[start] = [end]
+    def __init__(self, weight=False):
+        self.graph_dict = dict()
+        self.weight = weight
+        self.index = 0
 
     def __repr__(self):
         result = []
         for key, values in self.graph_dict.items():
-            result.append(f"-{key.index}: {key.data} ----> {[values]}\n")
-        return result
+            result.append(f"- {key.index}: {key.data} ----> {values}")
+        return "\n".join(result)
 
     def create_vertex(self, data: Any) -> Vertex:
-        new_vertex = Vertex(data, index=Graph.staticIndex)
-        Graph.staticIndex += 1
-        self.graph_dict[new_vertex] = []
+        new_vertex = Vertex(data=data, index=self.index)
+        self.graph_dict.update(dict.fromkeys([new_vertex], []))
+        self.index += 1
         return new_vertex
 
     def add_directed_edge(self, source: Vertex, destination: Vertex, weight: Optional[float] = None) -> None:
-        new_dir_edge = Edge(source, destination, weight)
-        if source in self.graph_dict:
-            self.graph_dict[source].append(new_dir_edge)
-        else:
-            self.graph_dict[source] = [new_dir_edge]
+        new_directed_edge = Edge(source, destination, weight)
+        self.graph_dict[source].append(new_directed_edge)
 
     def add_undirected_edge(self, source: Vertex, destination: Vertex, weight: Optional[float] = None) -> None:
-        from_edge = Edge(destination, source, weight)
-        if destination in self.graph_dict:
-            self.graph_dict[source].append(from_edge)
-        else:
-            self.graph_dict[source] = [from_edge]
+        undirected_edge1 = Edge(source, destination, weight)
+        self.graph_dict[source].append(undirected_edge1)
 
-        to_edge = Edge(source, destination, weight)
-        if source in self.graph_dict:
-            self.graph_dict[source].append(to_edge)
-        else:
-            self.graph_dict[source] = [to_edge]
+        undirected_edge2 = Edge(destination, source, weight)
+        self.graph_dict[destination].append(undirected_edge2)
 
     def add(self, edge: EdgeType, source: Vertex, destination: Vertex, weight: Optional[float] = None) -> None:
-        pass
+        if edge.value == 1:
+            new_directed_edge = Edge(source, destination, weight)
+            self.graph_dict[source].append(new_directed_edge)
+        elif edge.value == 2:
+            undirected_edge1 = Edge(source, destination, weight)
+            self.graph_dict[source].append(undirected_edge1)
+
+            undirected_edge2 = Edge(destination, source, weight)
+            self.graph_dict[destination].append(undirected_edge2)
+        else:
+            return
 
 
-v1 = Vertex("Katowice", 0)
-v2 = Vertex("Stavanger", 1)
-e1 = Edge(v1, v2)
-edge_list = [v1, v2]
+if __name__ == "__main__":
 
-graph = Graph(edge_list)
-print(graph)
+    g = Graph()
+    v1 = g.create_vertex("Stavanger")
+    v2 = g.create_vertex("New York")
+    g.add_directed_edge(g.create_vertex("Katowice"), v1)
+    g.add_undirected_edge(v1, g.create_vertex("Warszawa"))
+    g.add(EdgeType(1), v2, g.create_vertex("Washington"))
+    g.add(EdgeType(2), v2, g.create_vertex("Los Angeles"))
 
-"""
-
-routes = [
-    ("Katowice", "Stavanger"),
-    ("Katowice", "Warszawa"),
-    ("Stavanger", "Oslo"),
-    ("Warszawa", "Oslo"),
-    ("Warszawa", "Londyn"),
-    ("Oslo", "Londyn"),
-    ("Oslo", "Sztokholm")
-]
-
-routes_graph = Graph(routes)
-"""
-
-
+    print(g.graph_dict)
+    print(g)
