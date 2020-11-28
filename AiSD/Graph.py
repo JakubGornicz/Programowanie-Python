@@ -3,6 +3,7 @@ from typing import Any, Optional, Dict, List
 import networkx as nx
 import matplotlib.pyplot as plt
 
+
 class EdgeType(Enum):
     directed = 1
     undirected = 2
@@ -146,13 +147,13 @@ if __name__ == "__main__":
     v5 = g.create_vertex("v5")
 
     g.add_directed_edge(v0, v1, 10)
-    g.add_directed_edge(v0, v5, 5)
-    g.add_directed_edge(v5, v2, 20)
-    g.add_directed_edge(v2, v1, 9)
-    g.add_directed_edge(v2, v3, 4)
-    g.add_directed_edge(v3, v4, 3)
-    g.add_directed_edge(v4, v1, 10)
-    g.add_directed_edge(v4, v5, 3)
+    g.add_undirected_edge(v0, v5, 5)
+    g.add(EdgeType(1), v5, v2, 20)
+    g.add(EdgeType(1), v2, v1, 9)
+    g.add(EdgeType(2), v2, v3, 4)
+    g.add(EdgeType(1), v3, v4, 3)
+    g.add(EdgeType(1), v4, v1, 10)
+    g.add(EdgeType(1), v4, v5, 3)
 
     print(g.graph_dict)
     print(g)
