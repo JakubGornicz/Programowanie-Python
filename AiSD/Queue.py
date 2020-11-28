@@ -42,19 +42,20 @@ class Stack(object):
             return removed_val
 
 
-stack = Stack()
-assert len(stack) == 0  # test 1
-stack.push(3)
-stack.push(10)
-stack.push(1)
+if __name__ == "__main__":
+    stack = Stack()
+    assert len(stack) == 0  # test 1
+    stack.push(3)
+    stack.push(10)
+    stack.push(1)
 
-assert len(stack) == 3  # test 2
-print(stack)
+    assert len(stack) == 3  # test 2
+    print(stack)
 
-print("\n")
+    print("\n")
 
-top_value = stack.pop()
-assert top_value == 1  # test 3
-print(stack)
+    top_value = stack.pop()
+    assert top_value == 1  # test 3
+    print(stack)
 
-assert len(stack) == 2  # test 4
+    assert len(stack) == 2  # test 4
