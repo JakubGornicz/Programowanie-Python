@@ -1,6 +1,4 @@
-from AiSD.Graph import EdgeType, Graph, Vertex
-import networkx as nx
-import matplotlib.pyplot as plt
+from AiSD.Graphs.Graph import EdgeType, Graph, Vertex
 
 
 class GraphPath(object):
@@ -25,20 +23,22 @@ class GraphPath(object):
         queue = [[start]]
         while queue:
             path = queue.pop(0)
-            print(path, type(path), ": path")
             current = path[-1]
+            print(path, type(path), ": path")
             print(current, type(current), ": current")
             print(visited, ": visited:")
+
             if current not in visited:
                 neighbours = graph.graph_dict[current]
                 print(neighbours, type(neighbours), ": neighbours")
+
                 for neighbour in neighbours:
                     new_path = list(path)
-                    print(new_path, ": new_path1")
                     new_path.append(neighbour.destination)
-                    print(new_path, ": new_path2")
                     queue.append(new_path)
+                    print(new_path, ": new_path")
                     print(queue, ": queue")
+
                     if neighbour.destination == end:
                         print("###" * 10)
                         print("Shortest path: ", new_path)
@@ -54,24 +54,27 @@ class GraphPath(object):
         visited = []
         while current is not end:
             visited.append(current)
-            print(visited, ": visited")
             neighbours = graph.graph_dict[current]
-            print(neighbours, ": neighbours")
             weight_to_current = shortest_paths[current][1]
+            print(visited, ": visited")
+            print(neighbours, ": neighbours")
             print(weight_to_current, type(weight_to_current), ": weight_to_current")
 
             for neighbour in neighbours:
                 weight = neighbour.weight + weight_to_current
                 print(weight, ": weight")
+
                 if neighbour.destination not in shortest_paths:
                     shortest_paths[neighbour.destination] = (current, weight)
                 else:
                     current_shortest_weight = shortest_paths[neighbour.destination][1]
+
                     if current_shortest_weight > weight:
                         shortest_paths[neighbour.destination] = (current, weight)
 
             next_neighbours = {node: shortest_paths[node] for node in shortest_paths if node not in visited}
             print(next_neighbours, ": next_neighbours")
+
             if not next_neighbours:
                 return "Error: There's no path between chosen nodes"
             current = min(next_neighbours, key=lambda k: next_neighbours[k][1])
