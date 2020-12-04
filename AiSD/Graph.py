@@ -39,11 +39,13 @@ class Graph(object):
     graph_dict: Dict[Vertex, List[Edge]]
     weight: bool
     edge_weights: Dict[tuple, int]
+    weighted_edges: bool
 
     def __init__(self, weight=False):
         self.graph_dict = dict()
         self.weight = weight
         self.index = 0
+        self.is_weighted = False
 
     def __repr__(self):
         result = []
@@ -58,10 +60,14 @@ class Graph(object):
         return new_vertex
 
     def add_directed_edge(self, source: Vertex, destination: Vertex, weight: Optional[float] = None) -> None:
+        if weight:
+            self.is_weighted = True
         new_directed_edge = Edge(source, destination, weight)
         self.graph_dict[source].append(new_directed_edge)
 
     def add_undirected_edge(self, source: Vertex, destination: Vertex, weight: Optional[float] = None) -> None:
+        if weight:
+            self.is_weighted = True
         undirected_edge1 = Edge(source, destination, weight)
         self.graph_dict[source].append(undirected_edge1)
 
@@ -69,6 +75,8 @@ class Graph(object):
         self.graph_dict[destination].append(undirected_edge2)
 
     def add(self, edge: EdgeType, source: Vertex, destination: Vertex, weight: Optional[float] = None) -> None:
+        if weight:
+            self.is_weighted = True
         if edge.value == 1:
             new_directed_edge = Edge(source, destination, weight)
             self.graph_dict[source].append(new_directed_edge)
@@ -110,7 +118,7 @@ class Graph(object):
         self.dfs(start, visited)
         print(visited)
 
-    def show(self):
+    def show(self, path: Optional[list] = None):
         graph = nx.DiGraph()
         start = list(self.graph_dict.keys())[0]
         queue = [start]
@@ -127,10 +135,29 @@ class Graph(object):
                     queue.append(neighbour.destination)
                     graph.add_edge(current.data, neighbour.destination.data)
 
-        pos = nx.spectral_layout(graph)
-        nx.draw(graph, pos, edge_color='black', width=1, linewidths=1, node_size=3000, node_color='pink', alpha=0.7,
+        color_map = []
+        sizes = []
+        i = 1000
+
+        if path:
+            for node in graph:
+                if node in str(path):
+                    color_map.append("green")
+                    sizes.append(500+i)
+                    i *= 2
+
+                else:
+                    color_map.append("pink")
+                    sizes.append(6000)
+        else:
+            for node in graph:
+                sizes.append(6000)
+                color_map.append("pink")
+
+        pos = nx.circular_layout(graph)
+        nx.draw(graph, pos, edge_color='black', width=1, linewidths=1, node_size=sizes, node_color=color_map, alpha=0.7,
                 labels={node: node for node in graph.nodes()})
-        if self.weight is True:
+        if self.weight or self.is_weighted:
             nx.draw_networkx_edge_labels(graph, pos, edge_labels=edge_weights, font_color='red')
         plt.axis('off')
         plt.show()
@@ -147,6 +174,10 @@ if __name__ == "__main__":
     v5 = g.create_vertex("v5")
 
     g.add_directed_edge(v0, v1, 10)
+    g.add_directed_edge(v1, v2, 10)
+    g.add_directed_edge(v2, v3, 10)
+    g.add_directed_edge(v3, v4, 10)
+    g.add_directed_edge(v1, v2, 10)
     g.add_undirected_edge(v0, v5, 5)
     g.add(EdgeType(1), v5, v2, 20)
     g.add(EdgeType(1), v2, v1, 9)
